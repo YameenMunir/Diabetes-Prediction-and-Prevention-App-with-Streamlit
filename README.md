@@ -61,3 +61,10 @@ MIT License
 - Enable email or PDF export of results and tips
 - Add a chatbot for interactive Q&A on diabetes prevention
 - Improve accessibility and mobile responsiveness
+
+## UI & User Experience
+- The app features a large, modern title at the very top for clear branding.
+- A welcome image banner with a styled caption appears below the title.
+- Each health metric input includes an information icon (ℹ️) with easy-to-read explanations.
+- Sidebar credits are personalized for Yameen Munir, with updated links and no sensitive info.
+- Custom CSS ensures a clean, visually appealing layout.
