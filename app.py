@@ -97,6 +97,13 @@ def get_model():
 
 # --- Main App ---
 def main():
+    # App Title with custom font and style (moved to very top)
+    st.markdown(
+        """
+        <h1 style='text-align: center; font-family: "Segoe UI", Arial, sans-serif; font-size: 3em; color: #185a9d; letter-spacing: 1px; margin-bottom: 0.2em;'>🩺 Diabetes Risk & Prevention Advisor</h1>
+        """,
+        unsafe_allow_html=True
+    )
     # Welcome banner
     img = Image.open("img.png")
     st.image(img, caption="Welcome To Diabetes Prediction App", use_container_width=True)
@@ -121,14 +128,46 @@ def main():
 
     # User input fields
     st.markdown("## 🔎 Enter Your Health Information")
-    Pregnancies = st.number_input("Number of Pregnancies", 0, 20, 0)
-    Glucose = st.number_input("Glucose Level", 0, 300, 100)
-    BloodPressure = st.number_input("Blood Pressure", 0, 200, 70)
-    SkinThickness = st.number_input("Skin Thickness", 0, 100, 20)
-    Insulin = st.number_input("Insulin Level", 0, 1000, 80)
-    BMI = st.number_input("BMI", 10.0, 60.0, 25.0, step=0.1)
-    DiabetesPedigreeFunction = st.number_input("Diabetes Pedigree Function", 0.0, 2.5, 0.5, step=0.01)
-    Age = st.number_input("Age", 1, 120, 30)
+    Pregnancies = st.number_input(
+        "Number of Pregnancies",
+        0, 20, 0,
+        help="How many times you have been pregnant. Relevant for gestational diabetes risk."
+    )
+    Glucose = st.number_input(
+        "Glucose Level",
+        0, 300, 100,
+        help="Fasting blood sugar (mg/dL). High values may indicate diabetes risk."
+    )
+    BloodPressure = st.number_input(
+        "Blood Pressure",
+        0, 200, 70,
+        help="Diastolic blood pressure (mm Hg). High blood pressure increases diabetes risk."
+    )
+    SkinThickness = st.number_input(
+        "Skin Thickness",
+        0, 100, 20,
+        help="Triceps skinfold thickness (mm). Used to estimate body fat."
+    )
+    Insulin = st.number_input(
+        "Insulin Level",
+        0, 1000, 80,
+        help="Fasting insulin (mu U/ml). Indicates insulin production or resistance."
+    )
+    BMI = st.number_input(
+        "BMI",
+        10.0, 60.0, 25.0, step=0.1,
+        help="Body Mass Index. Measures weight relative to height. Healthy range: 18.5–24.9."
+    )
+    DiabetesPedigreeFunction = st.number_input(
+        "Diabetes Pedigree Function",
+        0.0, 2.5, 0.5, step=0.01,
+        help="Estimates genetic risk of diabetes based on family history."
+    )
+    Age = st.number_input(
+        "Age",
+        1, 120, 30,
+        help="Your age in years. Risk increases with age."
+    )
 
     input_data = [Pregnancies, Glucose, BloodPressure, SkinThickness, Insulin, BMI, DiabetesPedigreeFunction, Age]
     diagnosis = ""
