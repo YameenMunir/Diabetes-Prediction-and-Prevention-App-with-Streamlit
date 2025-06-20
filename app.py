@@ -1,3 +1,4 @@
+# Import required libraries
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -7,16 +8,18 @@ import pickle
 import os
 from dotenv import load_dotenv
 
-# Set page config
+# Configure the Streamlit page
 st.set_page_config(
     page_title="🩺 Diabetes Risk & Prevention Advisor",
     layout="wide",
     page_icon="🩺"
 )
 
+# Load environment variables from .env (useful if storing keys or configs)
 load_dotenv()
 
 # --- Categorization helpers ---
+# Classify BMI into health categories
 def categorize_bmi(bmi):
     if bmi < 18.5:
         return "underweight"
@@ -27,6 +30,7 @@ def categorize_bmi(bmi):
     else:
         return "obese"
 
+# Classify glucose levels into health risk ranges
 def categorize_glucose(glucose):
     if glucose < 100:
         return "normal"
@@ -35,6 +39,7 @@ def categorize_glucose(glucose):
     else:
         return "diabetic-range"
 
+# Classify age into broad demographic groups
 def categorize_age(age):
     if age < 30:
         return "young adult"
@@ -44,6 +49,7 @@ def categorize_age(age):
         return "older adult"
 
 # --- Personalized prevention tip generator ---
+# Generate lifestyle tips based on user input and prediction
 def get_prevention_tips(age, bmi, glucose, prediction):
     bmi_status = categorize_bmi(bmi)
     glucose_status = categorize_glucose(glucose)
@@ -52,19 +58,28 @@ def get_prevention_tips(age, bmi, glucose, prediction):
 
     tips = []
 
+    # General hydration advice
     tips.append("• 💧 Stay hydrated and avoid sugary drinks to stabilize blood sugar.")
+
+    # Weight-specific tips
     if bmi_status == "underweight":
         tips.append("• 🥑 Eat nutrient-dense meals and snacks to support healthy weight gain.")
     elif bmi_status in ["overweight", "obese"]:
         tips.append("• ⚖️ Aim for 5–10% weight loss with a mix of activity and dietary changes.")
+
+    # Glucose-specific tips
     if glucose_status == "prediabetic":
         tips.append("• 🥗 Cut refined carbs and focus on fiber-rich foods like lentils and greens.")
     elif glucose_status == "diabetic-range":
         tips.append("• 🩺 Book a consultation to begin glucose monitoring and diet adjustments.")
+
+    # Age-related recommendations
     if age_group == "young adult":
         tips.append("• 📱 Create habits early: use fitness apps and aim for 7–8 hours of sleep.")
     elif age_group == "older adult":
         tips.append("• 👟 Do joint-friendly exercises like walking, tai chi, or water aerobics.")
+
+    # Risk status advice
     if is_at_risk:
         tips.append("• 📆 Schedule a check-up soon to discuss risk and next steps.")
     else:
@@ -73,24 +88,28 @@ def get_prevention_tips(age, bmi, glucose, prediction):
     return tips
 
 # --- Model training and loading ---
-@st.cache_resource
+@st.cache_resource  # Cache model for performance
 def get_model():
     try:
+        # Try to load pre-trained model
         with open('diabetes_model.pkl', 'rb') as f:
             return pickle.load(f)
     except:
+        # If model doesn't exist, train a new one
         df = pd.read_csv('diabetes.csv')
         X = df.drop('Outcome', axis=1)
         y = df['Outcome']
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
         model = RandomForestClassifier(n_estimators=100, random_state=42)
         model.fit(X_train, y_train)
+        # Save trained model for future use
         with open('diabetes_model.pkl', 'wb') as f:
             pickle.dump(model, f)
         return model
 
 # --- Main App ---
 def main():
+    # App title and intro
     st.markdown("""
         # 🩺 Diabetes Risk & Prevention Advisor
         Welcome! This AI-powered tool will:
@@ -100,11 +119,12 @@ def main():
 
     st.markdown("---")
 
-    # Sidebar health input
+    # Sidebar for user input
     with st.sidebar:
         st.markdown("## 🔎 Health Input")
         st.markdown("Hover over the ℹ️ icon for a quick explanation of each input.")
 
+        # Health metrics with tooltips
         pregnancies = st.number_input(
             'Pregnancies',
             0, 20, 0,
@@ -153,11 +173,14 @@ def main():
             help="Your age. Risk for Type 2 diabetes increases over time."
         )
 
+        # Button to trigger prediction
         submit_button = st.button('🧠 Predict My Risk')
 
+    # Layout for output display
     col1, col2 = st.columns(2)
 
     if submit_button:
+        # Gather user inputs into a dictionary
         input_data = {
             'Pregnancies': pregnancies,
             'Glucose': glucose,
@@ -170,20 +193,24 @@ def main():
         }
 
         with col1:
+            # Display user input as a table
             st.markdown("### 📋 Your Health Summary")
             st.dataframe(pd.DataFrame([input_data]))
 
+            # Load model and make prediction
             model = get_model()
             input_array = np.array([list(input_data.values())])
             prediction = model.predict(input_array)[0]
             prediction_proba = model.predict_proba(input_array)[0]
 
+            # Show prediction result
             st.markdown("### 📈 Prediction Result")
             if prediction == 1:
                 st.error(f"⚠️ You are at **high risk** for diabetes.\n\n**Probability: {prediction_proba[1]*100:.1f}%**")
             else:
                 st.success(f"✅ You are at **low risk** for diabetes.\n\n**Probability: {prediction_proba[0]*100:.1f}%**")
 
+            # Visualize feature importance
             st.markdown("### 💡 Top Risk Factors")
             importance_df = pd.DataFrame({
                 'Feature': model.feature_names_in_,
@@ -192,12 +219,14 @@ def main():
             st.bar_chart(importance_df.set_index('Feature'))
 
         with col2:
+            # Show prevention recommendations
             st.markdown("### 🌱 Personalized Prevention Tips")
             st.info("Here are lifestyle suggestions tailored to your current profile:")
             tips = get_prevention_tips(age, bmi, glucose, prediction)
             for tip in tips:
                 st.markdown(f"- {tip[1:].strip() if tip.startswith('•') else tip}")
 
+            # Show general health monitoring suggestions
             st.markdown("### 🧭 Health Monitoring Guide")
             st.markdown("""
             - 🔬 Check fasting glucose every 3–6 months if you're at risk  
@@ -205,6 +234,7 @@ def main():
             - 🩸 Request a metabolic panel annually (glucose, A1C, lipids)
             """)
 
+            # Provide links to trusted resources
             st.markdown("### 🌐 Helpful Resources")
             st.markdown("""
             - [American Diabetes Association](https://www.diabetes.org)  
@@ -212,5 +242,6 @@ def main():
             - [Nutrition.gov Diabetes Section](https://www.nutrition.gov/topics/diet-and-health-conditions/diabetes)
             """)
 
+# Run app
 if __name__ == '__main__':
     main()
