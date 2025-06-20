@@ -51,3 +51,13 @@ A modern Streamlit web app that predicts your risk of developing diabetes and pr
 
 ## License
 MIT License
+
+## 🚀 Improvements
+- Add user authentication for saving and tracking health data
+- Integrate with wearable devices or health APIs for real-time data
+- Support for additional languages and localization
+- Add charts for historical trends if users return
+- Use more advanced or explainable AI models
+- Enable email or PDF export of results and tips
+- Add a chatbot for interactive Q&A on diabetes prevention
+- Improve accessibility and mobile responsiveness
