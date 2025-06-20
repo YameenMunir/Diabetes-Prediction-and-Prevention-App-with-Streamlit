@@ -7,7 +7,7 @@ import pickle
 import os
 from dotenv import load_dotenv
 
-# Set up page config
+# Set page config
 st.set_page_config(
     page_title="🩺 Diabetes Risk & Prevention Advisor",
     layout="wide",
@@ -16,7 +16,7 @@ st.set_page_config(
 
 load_dotenv()
 
-# --- Helpers for categorizing inputs ---
+# --- Categorization helpers ---
 def categorize_bmi(bmi):
     if bmi < 18.5:
         return "underweight"
@@ -43,7 +43,7 @@ def categorize_age(age):
     else:
         return "older adult"
 
-# --- Prevention Tips Generator ---
+# --- Personalized prevention tip generator ---
 def get_prevention_tips(age, bmi, glucose, prediction):
     bmi_status = categorize_bmi(bmi)
     glucose_status = categorize_glucose(glucose)
@@ -72,7 +72,7 @@ def get_prevention_tips(age, bmi, glucose, prediction):
 
     return tips
 
-# --- ML Model ---
+# --- Model training and loading ---
 @st.cache_resource
 def get_model():
     try:
@@ -94,23 +94,65 @@ def main():
     st.markdown("""
         # 🩺 Diabetes Risk & Prevention Advisor
         Welcome! This AI-powered tool will:
-        - Predict your risk of developing diabetes based on health metrics
+        - Predict your risk of developing diabetes based on health metrics  
         - Provide you with **personalized, practical lifestyle recommendations**
     """)
-    
+
     st.markdown("---")
 
+    # Sidebar health input
     with st.sidebar:
         st.markdown("## 🔎 Health Input")
-        st.markdown("Enter your recent health metrics below:")
-        pregnancies = st.number_input('Pregnancies (if applicable)', 0, 20, 0)
-        glucose = st.number_input('Glucose Level (mg/dL)', 0, 300, 100)
-        blood_pressure = st.number_input('Blood Pressure (mm Hg)', 0, 200, 70)
-        skin_thickness = st.number_input('Skin Thickness (mm)', 0, 100, 20)
-        insulin = st.number_input('Insulin Level (mu U/ml)', 0, 1000, 80)
-        bmi = st.number_input('BMI', 10.0, 60.0, 25.0)
-        diabetes_pedigree = st.number_input('Diabetes Pedigree Function', 0.0, 2.5, 0.5)
-        age = st.number_input('Age', 1, 120, 30)
+        st.markdown("Hover over the ℹ️ icon for a quick explanation of each input.")
+
+        pregnancies = st.number_input(
+            'Pregnancies',
+            0, 20, 0,
+            help="Number of times you've been pregnant (relevant to gestational diabetes risk)."
+        )
+
+        glucose = st.number_input(
+            'Glucose Level (mg/dL)',
+            0, 300, 100,
+            help="Fasting blood sugar level. A key indicator for prediabetes or diabetes."
+        )
+
+        blood_pressure = st.number_input(
+            'Blood Pressure (mm Hg)',
+            0, 200, 70,
+            help="Lower (diastolic) blood pressure. Consistently high values may be risky."
+        )
+
+        skin_thickness = st.number_input(
+            'Skin Thickness (mm)',
+            0, 100, 20,
+            help="Triceps skinfold thickness. Used to estimate body fat levels."
+        )
+
+        insulin = st.number_input(
+            'Insulin Level (mu U/ml)',
+            0, 1000, 80,
+            help="Fasting insulin concentration. Indicates insulin production or resistance."
+        )
+
+        bmi = st.number_input(
+            'BMI',
+            10.0, 60.0, 25.0, step=0.1,
+            help="Body Mass Index — measures weight relative to height."
+        )
+
+        diabetes_pedigree = st.number_input(
+            'Diabetes Pedigree Function',
+            0.0, 2.5, 0.5, step=0.01,
+            help="Predicts genetic likelihood of diabetes based on family history."
+        )
+
+        age = st.number_input(
+            'Age',
+            1, 120, 30,
+            help="Your age. Risk for Type 2 diabetes increases over time."
+        )
+
         submit_button = st.button('🧠 Predict My Risk')
 
     col1, col2 = st.columns(2)
@@ -138,37 +180,36 @@ def main():
 
             st.markdown("### 📈 Prediction Result")
             if prediction == 1:
-                st.error(f"⚠️ You are at **high risk** for diabetes. Probability: {prediction_proba[1]*100:.1f}%")
+                st.error(f"⚠️ You are at **high risk** for diabetes.\n\n**Probability: {prediction_proba[1]*100:.1f}%**")
             else:
-                st.success(f"✅ You are at **low risk** for diabetes. Probability: {prediction_proba[0]*100:.1f}%")
+                st.success(f"✅ You are at **low risk** for diabetes.\n\n**Probability: {prediction_proba[0]*100:.1f}%**")
 
-            st.markdown("### 💡 Risk Contributor Chart")
+            st.markdown("### 💡 Top Risk Factors")
             importance_df = pd.DataFrame({
                 'Feature': model.feature_names_in_,
                 'Importance': model.feature_importances_
             }).sort_values('Importance', ascending=False)
-
             st.bar_chart(importance_df.set_index('Feature'))
 
         with col2:
             st.markdown("### 🌱 Personalized Prevention Tips")
-            st.info("Tailored just for your health profile:")
+            st.info("Here are lifestyle suggestions tailored to your current profile:")
             tips = get_prevention_tips(age, bmi, glucose, prediction)
             for tip in tips:
                 st.markdown(f"- {tip[1:].strip() if tip.startswith('•') else tip}")
 
-            st.markdown("### 📅 Health Monitoring Guide")
+            st.markdown("### 🧭 Health Monitoring Guide")
             st.markdown("""
-            - 🔬 Check your glucose every 3–6 months if you're at risk  
-            - ⚖️ Track BMI and waist circumference each month  
-            - 🩸 Request a full metabolic panel every 12 months  
+            - 🔬 Check fasting glucose every 3–6 months if you're at risk  
+            - ⚖️ Track BMI, waist circumference, and weight monthly  
+            - 🩸 Request a metabolic panel annually (glucose, A1C, lipids)
             """)
 
-            st.markdown("### 🌐 Trusted Resources")
+            st.markdown("### 🌐 Helpful Resources")
             st.markdown("""
             - [American Diabetes Association](https://www.diabetes.org)  
             - [CDC Diabetes Prevention Program](https://www.cdc.gov/diabetes/prevention/)  
-            - [Nutrition.gov on Diabetes](https://www.nutrition.gov/topics/diet-and-health-conditions/diabetes)  
+            - [Nutrition.gov Diabetes Section](https://www.nutrition.gov/topics/diet-and-health-conditions/diabetes)
             """)
 
 if __name__ == '__main__':
