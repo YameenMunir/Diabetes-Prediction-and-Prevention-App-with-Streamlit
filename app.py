@@ -1,4 +1,3 @@
-# Import required libraries
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -8,19 +7,17 @@ import pickle
 import os
 from dotenv import load_dotenv
 
-# Set Streamlit page configuration
+# Set page config
 st.set_page_config(
     page_title="🩺 Diabetes Risk & Prevention Advisor",
     layout="wide",
     page_icon="🩺"
 )
 
-# Load environment variables (if needed)
 load_dotenv()
 
 # --- Categorization helpers ---
 def categorize_bmi(bmi):
-    # Categorize BMI value
     if bmi < 18.5:
         return "underweight"
     elif 18.5 <= bmi < 25:
@@ -31,7 +28,6 @@ def categorize_bmi(bmi):
         return "obese"
 
 def categorize_glucose(glucose):
-    # Categorize glucose level
     if glucose < 100:
         return "normal"
     elif 100 <= glucose < 140:
@@ -40,7 +36,6 @@ def categorize_glucose(glucose):
         return "diabetic-range"
 
 def categorize_age(age):
-    # Categorize age group
     if age < 30:
         return "young adult"
     elif 30 <= age < 50:
@@ -50,7 +45,6 @@ def categorize_age(age):
 
 # --- Personalized prevention tip generator ---
 def get_prevention_tips(age, bmi, glucose, prediction):
-    # Generate prevention tips based on user input
     bmi_status = categorize_bmi(bmi)
     glucose_status = categorize_glucose(glucose)
     age_group = categorize_age(age)
@@ -81,7 +75,6 @@ def get_prevention_tips(age, bmi, glucose, prediction):
 # --- Model training and loading ---
 @st.cache_resource
 def get_model():
-    # Load or train the diabetes prediction model
     try:
         with open('diabetes_model.pkl', 'rb') as f:
             return pickle.load(f)
@@ -96,58 +89,8 @@ def get_model():
             pickle.dump(model, f)
         return model
 
-# --- Custom CSS Styling ---
-def local_css(css: str):
-    # Inject custom CSS into the app
-    st.markdown(f'<style>{css}</style>', unsafe_allow_html=True)
-
-# Apply custom CSS
-local_css('''
-body, .stApp {
-    background: linear-gradient(120deg, #f0f4f8 0%, #e0eafc 100%);
-}
-.sidebar .sidebar-content {
-    background: #f7fafc;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-}
-h1, h2, h3, h4, h5, h6 {
-    color: #1a237e;
-    font-family: 'Segoe UI', 'Arial', sans-serif;
-}
-.stButton > button {
-    background: linear-gradient(90deg, #43cea2 0%, #185a9d 100%);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 0.5em 1.5em;
-    font-weight: bold;
-    font-size: 1.1em;
-    box-shadow: 0 2px 8px rgba(67,206,162,0.15);
-    transition: background 0.3s;
-}
-.stButton > button:hover {
-    background: linear-gradient(90deg, #185a9d 0%, #43cea2 100%);
-}
-.stDataFrame, .stTable {
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-}
-.stAlert, .stInfo {
-    border-radius: 8px;
-    font-size: 1.05em;
-}
-hr {
-    border: none;
-    border-top: 2px solid #43cea2;
-    margin: 1.5em 0;
-}
-''')
-
 # --- Main App ---
 def main():
-    # App title and description
     st.markdown("""
         # 🩺 Diabetes Risk & Prevention Advisor
         Welcome! This AI-powered tool will:
@@ -215,7 +158,6 @@ def main():
     col1, col2 = st.columns(2)
 
     if submit_button:
-        # Collect user input and make prediction
         input_data = {
             'Pregnancies': pregnancies,
             'Glucose': glucose,
@@ -271,5 +213,4 @@ def main():
             """)
 
 if __name__ == '__main__':
-    # Run the Streamlit app
     main()
