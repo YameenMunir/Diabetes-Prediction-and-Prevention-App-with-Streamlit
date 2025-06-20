@@ -5,17 +5,26 @@ from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 import pickle
 import os
-import google.generativeai as genai
+from transformers import pipeline
 
 # Set page config
 st.set_page_config(page_title="Diabetes Prediction & Prevention", layout="wide")
 
-# Configure Gemini AI (make sure to set your API key in environment variables)
-genai.configure(api_key=os.getenv('GEMINI_API_KEY'))
+# Load environment variables from .env file
+# (Assuming you still want to keep this part for any future use)
+from dotenv import load_dotenv
+load_dotenv()
 
-# Initialize Gemini model
-model_name = "gemini-pro"
-gemini = genai.GenerativeModel(model_name)
+# Debug: Check if GEMINI_API_KEY is loaded (do not print the full key for security)
+if os.getenv('GEMINI_API_KEY'):
+    st.info('Gemini API key loaded from environment.')
+else:
+    st.error('Gemini API key NOT loaded. Please check your .env file and restart the app.')
+
+# Initialize Hugging Face text generation pipeline
+@st.cache_resource
+def get_hf_generator():
+    return pipeline('text-generation', model='gpt2')
 
 # Load or train model
 @st.cache_resource
@@ -45,7 +54,7 @@ def get_model():
             
         return model
 
-# Function to get prevention tips from Gemini
+# Function to get prevention tips from Hugging Face GPT-2
 def get_prevention_tips(age, bmi, glucose, prediction):
     prompt = f"""
     You are a medical assistant providing diabetes prevention advice. 
@@ -64,18 +73,17 @@ def get_prevention_tips(age, bmi, glucose, prediction):
     - Clear and concise
     - Evidence-based
     """
-    
     try:
-        response = gemini.generate_content(prompt)
-        return response.text
+        generator = get_hf_generator()
+        response = generator(prompt, max_length=200, num_return_sequences=1)[0]['generated_text']
+        # Extract only the bulleted list from the response if possible
+        tips_start = response.find('-')
+        if tips_start != -1:
+            return response[tips_start:]
+        return response
     except Exception as e:
-        st.error(f"Error getting prevention tips: {str(e)}")
-        return """Here are some general diabetes prevention tips:
-        - Maintain a healthy weight through regular exercise
-        - Eat a balanced diet rich in whole grains, fruits, and vegetables
-        - Limit sugary foods and beverages
-        - Monitor your blood sugar levels regularly if at risk
-        - Get regular check-ups with your healthcare provider"""
+        st.error(f"Error generating prevention tips: {str(e)}")
+        return "Could not generate prevention tips. Please try again."
 
 # Main app function
 def main():
@@ -142,7 +150,7 @@ def main():
     with col2:
         if submit_button:
             st.subheader("Personalized Prevention Tips")
-            with st.spinner('Generating personalized recommendations with Gemini AI...'):
+            with st.spinner('Generating personalized recommendations with AI...'):
                 tips = get_prevention_tips(age, bmi, glucose, prediction)
                 st.markdown(tips)
             
