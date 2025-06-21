@@ -68,3 +68,12 @@ MIT License
 - Each health metric input includes an information icon (ℹ️) with easy-to-read explanations.
 - Sidebar credits are personalized for Yameen Munir, with updated links and no sensitive info.
 - Custom CSS ensures a clean, visually appealing layout.
+
+## SHAP Explainability & Detailed Feature Impact
+
+The app provides a SHAP (SHapley Additive exPlanations) waterfall plot to visually explain how each health metric (feature) contributed to your diabetes risk prediction. Below the plot, a detailed explanation is provided for each feature, describing:
+- The value you entered
+- Whether it increased, decreased, or did not affect your risk
+- A plain-language summary of the impact
+
+This helps you understand not just the overall result, but also which factors are most important for your personal risk profile.

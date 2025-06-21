@@ -5,3 +5,5 @@ scikit-learn
 python-dotenv
 transformers
 torch
+shap
+matplotlib
