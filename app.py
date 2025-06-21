@@ -214,6 +214,12 @@ Diagnosis: {diagnosis}
         }).sort_values('Importance', ascending=False)
         st.bar_chart(importance_df.set_index('Feature'))
 
+        # Insights below the graph
+        top_feature = importance_df.iloc[0]['Feature']
+        st.info(f"**Insight:** The most influential factor for your diabetes risk prediction is **{top_feature}**.\n\n"
+                "Focus on managing this metric for the greatest impact on your health. "
+                "Review the prevention tips above for actionable steps related to this factor.")
+
         # Monitoring guide
         st.markdown("## 🧭 Health Monitoring Guide")
         st.markdown("""
