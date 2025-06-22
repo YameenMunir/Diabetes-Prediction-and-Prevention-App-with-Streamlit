@@ -2,6 +2,10 @@
 
 A modern Streamlit web app that predicts your risk of developing diabetes and provides personalized, evidence-based prevention tips. No API keys required—runs fully locally!
 
+## 🔗 Link to Application
+
+[Link to Application](https://diabetes-prediction-and-prevention-app.streamlit.app/)
+
 ## Features
 - **Diabetes risk prediction** using a trained Random Forest model
 - **Personalized prevention tips** based on your health metrics (age, BMI, glucose, etc.)
