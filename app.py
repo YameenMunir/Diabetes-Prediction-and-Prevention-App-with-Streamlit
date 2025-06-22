@@ -88,9 +88,9 @@ def main():
     with st.sidebar:
         st.markdown("🧑‍💻 Developed by: **Yameen Munir**")
         st.markdown("📧 yameenmunir05@gmail.com")
-        st.markdown("[LinkedIn](https://www.linkedin.com/in/yameen-munir/)")
-        st.markdown("[GitHub](https://github.com/YameenMunir)")
-        st.markdown("[Portfolio](https://www.datascienceportfol.io/YameenMunir)")
+        st.markdown("👔 [LinkedIn](https://www.linkedin.com/in/yameen-munir/)")
+        st.markdown("🐙 [GitHub](https://github.com/YameenMunir)")
+        st.markdown("🌐 [Portfolio](https://www.datascienceportfol.io/YameenMunir)")
 
     st.markdown("## 🔎 Enter Your Health Information")
     Pregnancies = st.number_input("Pregnancies", 0, 20, 0)
