@@ -233,24 +233,40 @@ Diagnosis: {result_text}
                 "**Why it matters:**\n"
                 "A higher proportion of diabetics in the dataset may reflect real-world trends or specific risk factors in the studied population. If you see a large diabetic group, it highlights the importance of screening and early intervention. If the non-diabetic group is larger, it shows prevention is working, but vigilance is still needed.")
 
-            st.markdown("### 🔍 Age vs Glucose Scatter Plot")
-            import matplotlib.pyplot as plt
-            fig, ax = plt.subplots()
-            # Filter for age 0-100
-            age_glucose = df[(df['Age'] >= 0) & (df['Age'] <= 100)]
-            ax.scatter(age_glucose['Age'], age_glucose['Glucose'], alpha=0.5, s=30, c='#185a9d', edgecolors='w', linewidths=0.5)
-            ax.set_xlabel('Age (years)')
-            ax.set_ylabel('Glucose Level (mg/dL)')
-            ax.set_xlim(0, 100)
-            ax.set_title('Age vs Glucose Level')
-            ax.grid(True, linestyle='--', alpha=0.3)
+            st.markdown("### 📈 Average Glucose by Age Group")
+            # Create age bins
+            age_bins = [0, 20, 30, 40, 50, 60, 70, 80, 100]
+            age_labels = ["<20", "20-29", "30-39", "40-49", "50-59", "60-69", "70-79", "80+"]
+            df['AgeGroup'] = pd.cut(df['Age'], bins=age_bins, labels=age_labels, right=False)
+            group_means = df.groupby('AgeGroup')['Glucose'].mean().reindex(age_labels)
+            group_counts = df.groupby('AgeGroup')['Glucose'].count().reindex(age_labels)
+            fig, ax1 = plt.subplots(figsize=(8, 4))
+            color = '#185a9d'
+            ax1.bar(age_labels, group_means, color=color, alpha=0.7)
+            ax1.set_xlabel('Age Group (years)')
+            ax1.set_ylabel('Average Glucose Level (mg/dL)', color=color)
+            ax1.set_title('Average Glucose Level by Age Group')
+            ax1.tick_params(axis='y', labelcolor=color)
+            # Add value labels on bars
+            for i, v in enumerate(group_means):
+                if not pd.isna(v):
+                    ax1.text(i, v + 2, f"{v:.0f}", ha='center', va='bottom', fontsize=9)
+            ax2 = ax1.twinx()
+            line, = ax2.plot(age_labels, group_counts, color='red', marker='o', linestyle='--', alpha=0.7, label='Number of People')
+            ax2.set_ylabel('Number of People', color='red')
+            ax2.tick_params(axis='y', labelcolor='red')
+            # Add legend for the line in the upper right corner outside the plot
+            ax2.legend(loc='upper left', bbox_to_anchor=(1.18, 1))
+            # Make y-axis a little bit wider
+            y_min, y_max = ax2.get_ylim()
+            ax2.set_ylim(y_min, y_max * 1.15)
             st.pyplot(fig)
-            st.caption("This scatter plot visualizes the relationship between age (0-100) and glucose levels. It can reveal trends, such as whether older individuals tend to have higher glucose levels.")
+            st.caption("This bar chart shows the average glucose level for each age group, with a line showing the number of people in each group. It helps reveal whether older age groups tend to have higher average glucose levels.")
             st.markdown(
-                "> Each dot is a person. As you look from left (younger) to right (older), do you see more dots rising higher? This can show how, as people age, their glucose levels may increase, highlighting the importance of regular health checks as we grow older.")
+                "> Each bar represents an age group, and its height shows the average glucose level for that group. The dotted line shows how many people are in each group. Look for a trend: do older age groups have higher bars? This can reveal how glucose levels change with age, highlighting the importance of regular health checks as we grow older.")
             st.markdown(
                 "**Why it matters:**\n"
-                "If you notice a trend where older people have higher glucose, it suggests that aging is a risk factor for diabetes. This visualization encourages users to monitor their glucose as they age and to adopt healthy habits early to reduce risk.")
+                "If you notice a trend where older age groups have higher average glucose, it suggests that aging is a risk factor for diabetes. This visualization encourages users to monitor their glucose as they age and to adopt healthy habits early to reduce risk.")
 
             st.markdown("### ⚖️ BMI Category Breakdown")
             df["BMI_Category"] = df["BMI"].apply(categorize_bmi)
@@ -278,4 +294,3 @@ Diagnosis: {result_text}
 
 if __name__ == "__main__":
     main()
-
