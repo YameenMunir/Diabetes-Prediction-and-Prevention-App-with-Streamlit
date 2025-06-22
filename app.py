@@ -107,7 +107,16 @@ def main():
         Height_in = st.number_input("Height (inches) ℹ️", 0, 11, 7, help="Inches part of your height.")
         Height = Height_ft * 30.48 + Height_in * 2.54  # convert to cm
         st.markdown(f"**Total Height:** {Height:.1f} cm")
-    Weight = st.number_input("Weight (kg) ℹ️", 30, 200, 70, help="Your weight in kilograms.")
+
+    # Weight input with unit switch
+    weight_unit = st.radio("Select weight unit:", ("kg", "lb"), horizontal=True, help="Choose your preferred weight unit.")
+    if weight_unit == "kg":
+        Weight = st.number_input("Weight (kg) ℹ️", 30, 200, 70, help="Your weight in kilograms.")
+    else:
+        Weight_lb = st.number_input("Weight (lb) ℹ️", 66, 440, 154, help="Your weight in pounds.")
+        Weight = Weight_lb * 0.453592  # convert to kg
+        st.markdown(f"**Total Weight:** {Weight:.1f} kg")
+
     # Calculate BMI
     BMI = Weight / ((Height / 100) ** 2)
     st.markdown(f"**Calculated BMI:** {BMI:.2f}")
