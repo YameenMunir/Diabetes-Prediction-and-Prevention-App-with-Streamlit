@@ -189,6 +189,17 @@ Diagnosis: {result_text}
 
         # Improved Detailed SHAP explanation for each feature
         st.markdown("### 📝 Detailed Feature Impact Explanation")
+        # Human-friendly explanations for each feature
+        feature_explanations = {
+            "Pregnancies": "Number of times you have been pregnant. More pregnancies can be associated with higher diabetes risk.",
+            "Glucose": "Plasma glucose concentration after fasting. High glucose levels are a strong indicator of diabetes risk.",
+            "BloodPressure": "Diastolic blood pressure (mm Hg). High blood pressure is a risk factor for diabetes and related complications.",
+            "SkinThickness": "Triceps skin fold thickness (mm). Indicates body fat percentage, which can affect diabetes risk.",
+            "Insulin": "2-Hour serum insulin (mu U/ml). Abnormal insulin levels can signal insulin resistance or diabetes.",
+            "BMI": "Body Mass Index, calculated from height and weight. Higher BMI is linked to increased diabetes risk.",
+            "DiabetesPedigreeFunction": "Likelihood of diabetes based on family history. Higher values mean greater genetic risk.",
+            "Age": "Your age in years. Risk of diabetes increases with age."
+        }
         # Sort features by absolute impact
         impact_tuples = sorted(zip(feature_names, input_np[0], shap_values_to_plot), key=lambda x: abs(x[2]), reverse=True)
         for fname, fval, sval in impact_tuples:
@@ -204,9 +215,11 @@ Diagnosis: {result_text}
                 badge = "⬜"
                 direction = "did not affect"
                 summary = f"This feature had little or no effect on your risk in this prediction."
+            explanation = feature_explanations.get(fname, "No explanation available for this feature.")
             with st.expander(f"{badge} {fname} (value: {fval})"):
                 st.markdown(f"- **Impact:** {direction} your risk by `{abs(sval):.3f}` units.")
                 st.info(summary)
+                st.caption(f"ℹ️ {explanation}")
 
         # Extra Insights
         with st.expander("📈 Explore More Dataset Insights"):
