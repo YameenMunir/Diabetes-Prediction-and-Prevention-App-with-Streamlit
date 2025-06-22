@@ -152,6 +152,7 @@ Diagnosis: {result_text}
 
         # SHAP Explainability
         st.markdown("## 🧠 SHAP Explanation")
+        import matplotlib.pyplot as plt  # Ensure plt is available for SHAP and custom plots
         background_sample = df.drop("Outcome", axis=1).sample(100, random_state=42)
         explainer, shap_vals = get_shap_explainer(model, background_sample)
 
@@ -225,13 +226,41 @@ Diagnosis: {result_text}
         with st.expander("📈 Explore More Dataset Insights"):
             st.markdown("### 🧮 Risk Group Distribution")
             st.bar_chart(df["Outcome"].value_counts().rename({0: "Non-Diabetic", 1: "Diabetic"}))
+            st.caption("This chart shows the number of people in the dataset who are diabetic versus non-diabetic. It helps you understand the overall prevalence of diabetes in the sample.")
+            st.markdown(
+                "> Imagine a room of 100 people from this dataset. This chart tells you how many of them are living with diabetes and how many are not. It gives you a sense of how common diabetes is in this group, and why prevention and awareness matter for everyone.")
+            st.markdown(
+                "**Why it matters:**\n"
+                "A higher proportion of diabetics in the dataset may reflect real-world trends or specific risk factors in the studied population. If you see a large diabetic group, it highlights the importance of screening and early intervention. If the non-diabetic group is larger, it shows prevention is working, but vigilance is still needed.")
 
             st.markdown("### 🔍 Age vs Glucose Scatter Plot")
-            st.scatter_chart(df[["Age", "Glucose"]])
+            import matplotlib.pyplot as plt
+            fig, ax = plt.subplots()
+            # Filter for age 0-100
+            age_glucose = df[(df['Age'] >= 0) & (df['Age'] <= 100)]
+            ax.scatter(age_glucose['Age'], age_glucose['Glucose'], alpha=0.5, s=30, c='#185a9d', edgecolors='w', linewidths=0.5)
+            ax.set_xlabel('Age (years)')
+            ax.set_ylabel('Glucose Level (mg/dL)')
+            ax.set_xlim(0, 100)
+            ax.set_title('Age vs Glucose Level')
+            ax.grid(True, linestyle='--', alpha=0.3)
+            st.pyplot(fig)
+            st.caption("This scatter plot visualizes the relationship between age (0-100) and glucose levels. It can reveal trends, such as whether older individuals tend to have higher glucose levels.")
+            st.markdown(
+                "> Each dot is a person. As you look from left (younger) to right (older), do you see more dots rising higher? This can show how, as people age, their glucose levels may increase, highlighting the importance of regular health checks as we grow older.")
+            st.markdown(
+                "**Why it matters:**\n"
+                "If you notice a trend where older people have higher glucose, it suggests that aging is a risk factor for diabetes. This visualization encourages users to monitor their glucose as they age and to adopt healthy habits early to reduce risk.")
 
             st.markdown("### ⚖️ BMI Category Breakdown")
             df["BMI_Category"] = df["BMI"].apply(categorize_bmi)
             st.bar_chart(df["BMI_Category"].value_counts())
+            st.caption("This chart displays the distribution of BMI categories (underweight, normal, overweight, obese) in the dataset. It helps you see how common each BMI group is among participants.")
+            st.markdown(
+                "> Think of this as a snapshot of body types in the dataset. If most people fall into the overweight or obese categories, it signals a community-wide opportunity for healthier habits. Where do you fit in this picture?")
+            st.markdown(
+                "**Why it matters:**\n"
+                "A high number of overweight or obese individuals in the dataset is a warning sign for increased diabetes risk in the community. This chart can motivate individuals and communities to focus on nutrition, exercise, and healthy living to shift the distribution toward normal BMI.")
 
         st.markdown("## 🧭 Health Monitoring Guide")
         st.markdown("""
