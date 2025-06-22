@@ -187,17 +187,26 @@ Diagnosis: {result_text}
         st.pyplot(plt.gcf(), clear_figure=True)
         st.info("💡 This chart shows how each feature pushed your result higher or lower.")
 
-        # Detailed SHAP explanation for each feature
+        # Improved Detailed SHAP explanation for each feature
         st.markdown("### 📝 Detailed Feature Impact Explanation")
-        for fname, fval, sval in zip(feature_names, input_np[0], shap_values_to_plot):
-            direction = "increased" if sval > 0 else ("decreased" if sval < 0 else "did not affect")
-            st.markdown(f"- **{fname}** (value: `{fval}`) {direction} your risk by `{abs(sval):.3f}` units.")
+        # Sort features by absolute impact
+        impact_tuples = sorted(zip(feature_names, input_np[0], shap_values_to_plot), key=lambda x: abs(x[2]), reverse=True)
+        for fname, fval, sval in impact_tuples:
             if sval > 0:
-                st.caption(f"A higher {fname} contributed to a higher predicted risk.")
+                badge = "🟥"
+                direction = "increased"
+                summary = f"A higher {fname} contributes to a higher predicted risk."
             elif sval < 0:
-                st.caption(f"A lower {fname} contributed to a lower predicted risk.")
+                badge = "🟩"
+                direction = "decreased"
+                summary = f"A lower {fname} contributes to a lower predicted risk."
             else:
-                st.caption(f"This feature had little or no effect on your risk in this prediction.")
+                badge = "⬜"
+                direction = "did not affect"
+                summary = f"This feature had little or no effect on your risk in this prediction."
+            with st.expander(f"{badge} {fname} (value: {fval})"):
+                st.markdown(f"- **Impact:** {direction} your risk by `{abs(sval):.3f}` units.")
+                st.info(summary)
 
         # Extra Insights
         with st.expander("📈 Explore More Dataset Insights"):
