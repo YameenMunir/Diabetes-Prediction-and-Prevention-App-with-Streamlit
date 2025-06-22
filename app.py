@@ -284,6 +284,43 @@ Diagnosis: {result_text}
                     "**Why it matters:**\n"
                     "A high number of overweight or obese individuals in the dataset is a warning sign for increased diabetes risk in the community. This chart can motivate individuals and communities to focus on nutrition, exercise, and healthy living to shift the distribution toward normal BMI.")
 
+            # New Visualization 1: Insulin Level Distribution
+            with st.expander("💉 Insulin Level Distribution", expanded=False):
+                fig_hist, ax_hist = plt.subplots(figsize=(8, 4))
+                ax_hist.hist(df["Insulin"], bins=30, color="#185a9d", alpha=0.7)
+                ax_hist.set_xlabel("Insulin Level (mu U/ml)")
+                ax_hist.set_ylabel("Number of People")
+                ax_hist.set_title("Distribution of Insulin Levels")
+                st.pyplot(fig_hist)
+                st.caption("This histogram shows the distribution of insulin levels in the dataset. It helps you see the range and common values for insulin among participants.")
+                st.markdown(
+                    "> The shape of this histogram can reveal if most people have normal, low, or high insulin levels. Outliers or a skewed distribution may indicate subgroups with insulin resistance or other metabolic issues.")
+                st.markdown(
+                    "**Why it matters:**\n"
+                    "Understanding insulin distribution helps identify patterns of insulin resistance or deficiency, which are key factors in diabetes risk and management.")
+
+            # New Visualization 2: Blood Pressure by Age Group
+            with st.expander("🩸 Blood Pressure by Age Group", expanded=False):
+                bp_group_means = df.groupby('AgeGroup')['BloodPressure'].mean().reindex(age_labels)
+                fig2, ax3 = plt.subplots(figsize=(8, 4))
+                ax3.plot(age_labels, bp_group_means, marker='o', color='#185a9d')
+                ax3.set_xlabel('Age Group (years)')
+                ax3.set_ylabel('Average Blood Pressure (mm Hg)')
+                ax3.set_title('Average Blood Pressure by Age Group')
+                # Extend y-axis a bit for clarity
+                y_min, y_max = ax3.get_ylim()
+                ax3.set_ylim(y_min, y_max * 1.15)
+                for i, v in enumerate(bp_group_means):
+                    if not pd.isna(v):
+                        ax3.text(i, v + 1, f"{v:.0f}", ha='center', va='bottom', fontsize=9)
+                st.pyplot(fig2)
+                st.caption("This line chart shows the average blood pressure for each age group. It helps you see if blood pressure tends to rise with age in the dataset.")
+                st.markdown(
+                    "> Each point shows the average blood pressure for an age group. Look for a trend: does blood pressure increase with age? This can highlight the importance of monitoring blood pressure as you get older.")
+                st.markdown(
+                    "**Why it matters:**\n"
+                    "High blood pressure is a major risk factor for diabetes and its complications. Tracking how it changes with age can help users and clinicians focus on prevention and early intervention.")
+
         st.markdown("## 🧭 Health Monitoring Guide")
         st.markdown("""
 - 🔬 Fasting glucose: every 3–6 months  
