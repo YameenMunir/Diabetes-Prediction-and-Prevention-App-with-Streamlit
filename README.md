@@ -81,3 +81,13 @@ The app provides a SHAP (SHapley Additive exPlanations) waterfall plot to visual
 - A plain-language summary of the impact
 
 This helps you understand not just the overall result, but also which factors are most important for your personal risk profile.
+
+## 🗂️ Explore More Dataset Insights
+
+This section of the app provides interactive, collapsible visualizations to help you understand the dataset and your risk in context:
+
+- **🧮 Risk Group Distribution:** See how many people in the dataset are diabetic vs. non-diabetic, with an explanation of why this matters.
+- **📈 Average Glucose by Age Group:** Explore how average glucose levels and group sizes change across age groups, with a combined bar/line chart and plain-language insights.
+- **⚖️ BMI Category Breakdown:** View the distribution of BMI categories (underweight, normal, overweight, obese) and learn why this is important for diabetes risk.
+
+Each visualization is in its own dropdown (expander) for a clean, user-friendly experience. Explanations and practical takeaways are provided for every chart.
