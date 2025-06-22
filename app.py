@@ -98,7 +98,19 @@ def main():
     BloodPressure = st.number_input("Blood Pressure", 0, 200, 70)
     SkinThickness = st.number_input("Skin Thickness", 0, 100, 20)
     Insulin = st.number_input("Insulin Level", 0, 1000, 80)
-    BMI = st.number_input("BMI", 10.0, 60.0, 25.0, step=0.1)
+    # Height input with unit switch
+    height_unit = st.radio("Select height unit:", ("cm", "ft/in"), horizontal=True)
+    if height_unit == "cm":
+        Height = st.number_input("Height (cm)", 100, 250, 170)
+    else:
+        Height_ft = st.number_input("Height (feet)", 3, 8, 5)
+        Height_in = st.number_input("Height (inches)", 0, 11, 7)
+        Height = Height_ft * 30.48 + Height_in * 2.54  # convert to cm
+        st.markdown(f"**Total Height:** {Height:.1f} cm")
+    Weight = st.number_input("Weight (kg)", 30, 200, 70)
+    # Calculate BMI
+    BMI = Weight / ((Height / 100) ** 2)
+    st.markdown(f"**Calculated BMI:** {BMI:.2f}")
     DPF = st.number_input("Diabetes Pedigree Function", 0.0, 2.5, 0.5, step=0.01)
     Age = st.number_input("Age", 1, 120, 30)
 
@@ -116,7 +128,7 @@ Glucose Level: {Glucose}
 Blood Pressure: {BloodPressure}
 Skin Thickness: {SkinThickness}
 Insulin Level: {Insulin}
-BMI: {BMI:.2f}
+Height (cm): {Height}\nWeight (kg): {Weight}\nBMI: {BMI:.2f}
 Diabetes Pedigree Function: {DPF:.2f}
 Age: {Age}
 Diagnosis: {result_text}
@@ -215,3 +227,4 @@ Diagnosis: {result_text}
 
 if __name__ == "__main__":
     main()
+
