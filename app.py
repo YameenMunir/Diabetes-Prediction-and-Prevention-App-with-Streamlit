@@ -93,26 +93,26 @@ def main():
         st.markdown("🌐 [Portfolio](https://www.datascienceportfol.io/YameenMunir)")
 
     st.markdown("## 🔎 Enter Your Health Information")
-    Pregnancies = st.number_input("Pregnancies", 0, 20, 0)
-    Glucose = st.number_input("Glucose Level", 0, 300, 100)
-    BloodPressure = st.number_input("Blood Pressure", 0, 200, 70)
-    SkinThickness = st.number_input("Skin Thickness", 0, 100, 20)
-    Insulin = st.number_input("Insulin Level", 0, 1000, 80)
+    Pregnancies = st.number_input("Pregnancies ℹ️", 0, 20, 0, help="Number of times you have been pregnant (0 if never).")
+    Glucose = st.number_input("Glucose Level ℹ️", 0, 300, 100, help="Plasma glucose concentration after fasting (mg/dL).")
+    BloodPressure = st.number_input("Blood Pressure ℹ️", 0, 200, 70, help="Diastolic blood pressure (mm Hg). Normal is around 80 mm Hg.")
+    SkinThickness = st.number_input("Skin Thickness ℹ️", 0, 100, 20, help="Triceps skin fold thickness (mm). Indicates body fat.")
+    Insulin = st.number_input("Insulin Level ℹ️", 0, 1000, 80, help="2-Hour serum insulin (mu U/ml). Measures insulin in blood.")
     # Height input with unit switch
-    height_unit = st.radio("Select height unit:", ("cm", "ft/in"), horizontal=True)
+    height_unit = st.radio("Select height unit:", ("cm", "ft/in"), horizontal=True, help="Choose your preferred height unit.")
     if height_unit == "cm":
-        Height = st.number_input("Height (cm)", 100, 250, 170)
+        Height = st.number_input("Height (cm) ℹ️", 100, 250, 170, help="Your height in centimeters.")
     else:
-        Height_ft = st.number_input("Height (feet)", 3, 8, 5)
-        Height_in = st.number_input("Height (inches)", 0, 11, 7)
+        Height_ft = st.number_input("Height (feet) ℹ️", 3, 8, 5, help="Feet part of your height.")
+        Height_in = st.number_input("Height (inches) ℹ️", 0, 11, 7, help="Inches part of your height.")
         Height = Height_ft * 30.48 + Height_in * 2.54  # convert to cm
         st.markdown(f"**Total Height:** {Height:.1f} cm")
-    Weight = st.number_input("Weight (kg)", 30, 200, 70)
+    Weight = st.number_input("Weight (kg) ℹ️", 30, 200, 70, help="Your weight in kilograms.")
     # Calculate BMI
     BMI = Weight / ((Height / 100) ** 2)
     st.markdown(f"**Calculated BMI:** {BMI:.2f}")
-    DPF = st.number_input("Diabetes Pedigree Function", 0.0, 2.5, 0.5, step=0.01)
-    Age = st.number_input("Age", 1, 120, 30)
+    DPF = st.number_input("Diabetes Pedigree Function ℹ️", 0.0, 2.5, 0.5, step=0.01, help="Likelihood of diabetes based on family history.")
+    Age = st.number_input("Age ℹ️", 1, 120, 30, help="Your age in years.")
 
     input_data = [Pregnancies, Glucose, BloodPressure, SkinThickness, Insulin, BMI, DPF, Age]
 
