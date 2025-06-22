@@ -89,5 +89,7 @@ This section of the app provides interactive, collapsible visualizations to help
 - **🧮 Risk Group Distribution:** See how many people in the dataset are diabetic vs. non-diabetic, with an explanation of why this matters.
 - **📈 Average Glucose by Age Group:** Explore how average glucose levels and group sizes change across age groups, with a combined bar/line chart and plain-language insights.
 - **⚖️ BMI Category Breakdown:** View the distribution of BMI categories (underweight, normal, overweight, obese) and learn why this is important for diabetes risk.
+- **🧬 Insulin Level Distribution:** Visualizes the spread of insulin levels in the dataset, highlighting common ranges and outliers. This helps users understand how their insulin value compares to the population and why abnormal insulin levels are a key risk factor for diabetes.
+- **🩸 Blood Pressure by Age Group:** Shows the average blood pressure for different age groups, revealing trends and potential risk periods. This chart helps users see how blood pressure changes with age and why managing blood pressure is crucial for diabetes prevention.
 
 Each visualization is in its own dropdown (expander) for a clean, user-friendly experience. Explanations and practical takeaways are provided for every chart.
