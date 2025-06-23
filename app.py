@@ -85,13 +85,6 @@ def main():
     st.markdown("<h1 style='text-align:center;color:#185a9d;'>🩺 Diabetes Risk & Prevention Advisor</h1>", unsafe_allow_html=True)
     st.image(Image.open("img.png"), use_container_width=True)
 
-    with st.sidebar:
-        st.markdown("🧑‍💻 Developed by: **Yameen Munir**")
-        st.markdown("📧 yameenmunir05@gmail.com")
-        st.markdown("👔 [LinkedIn](https://www.linkedin.com/in/yameen-munir/)")
-        st.markdown("🐙 [GitHub](https://github.com/YameenMunir)")
-        st.markdown("🌐 [Portfolio](https://www.datascienceportfol.io/YameenMunir)")
-
     st.markdown("## 🔎 Enter Your Health Information")
     Pregnancies = st.number_input("Pregnancies ℹ️", 0, 20, 0, help="Number of times you have been pregnant (0 if never).")
     Glucose = st.number_input("Glucose Level ℹ️", 0, 300, 100, help="Plasma glucose concentration after fasting (mg/dL).")
@@ -334,6 +327,17 @@ Diagnosis: {result_text}
 - [CDC Diabetes Prevention Program](https://www.cdc.gov/diabetes/prevention/)  
 - [Nutrition.gov – Diabetes](https://www.nutrition.gov/topics/diet-and-health-conditions/diabetes)
 """)
+
+    st.markdown("---")
+    st.markdown(
+        '<div style="text-align:center; font-size:1.1em;">'
+        '    Made by <b>Yameen Munir</b> &nbsp;|&nbsp; '
+        '    <a href="https://github.com/YameenMunir" target="_blank">GitHub</a> &nbsp;|&nbsp; '
+        '    <a href="https://www.linkedin.com/in/yameen-munir/" target="_blank">LinkedIn</a> &nbsp;|&nbsp; '
+        '    <a href="https://www.datascienceportfol.io/YameenMunir" target="_blank">Portfolio</a>'
+        '</div>',
+        unsafe_allow_html=True
+    )
 
 if __name__ == "__main__":
     main()
