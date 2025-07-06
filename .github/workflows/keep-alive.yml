@@ -2,8 +2,6 @@ name: Keep Streamlit App Alive
 
 on:
   # Run every 1 hour to prevent the Streamlit Community Cloud app from hibernating
-  # Cron schedule: minute hour day month day_of_week
-  # "0 * * * *" means: at minute 0 of every hour (every hour on the hour)
   schedule:
     - cron: '0 * * * *'
   
@@ -27,7 +25,7 @@ jobs:
           echo "📡 Attempt $i of $MAX_RETRIES..."
           
           # Make HTTP request with timeout and get response code
-          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "$APP_URL")
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "$APP_URL" || echo "000")
           
           if [ "$HTTP_CODE" -eq 200 ]; then
             echo "✅ Success! App responded with HTTP $HTTP_CODE"
@@ -48,6 +46,7 @@ jobs:
         exit 1
       
     - name: Log Completion
+      if: always()
       run: |
         echo "📊 Keep-alive ping completed at $(date)"
         echo "🌍 Timezone: $(date +%Z)"
