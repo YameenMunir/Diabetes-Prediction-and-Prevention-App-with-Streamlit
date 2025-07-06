@@ -13,9 +13,12 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+    - name: Set Environment Variables
+      run: |
+        echo "APP_URL=https://diabetes-prediction-and-prevention-app.streamlit.app/" >> $GITHUB_ENV
+
     - name: Ping Streamlit App with Retry Logic
       run: |
-        APP_URL="https://diabetes-prediction-and-prevention-app.streamlit.app/"
         MAX_RETRIES=3
         RETRY_DELAY=10
         
@@ -25,7 +28,7 @@ jobs:
           echo "📡 Attempt $i of $MAX_RETRIES..."
           
           # Make HTTP request with timeout and get response code
-          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "$APP_URL" || echo "000")
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 "$APP_URL" || echo "000")
           
           if [ "$HTTP_CODE" -eq 200 ]; then
             echo "✅ Success! App responded with HTTP $HTTP_CODE"
@@ -35,6 +38,7 @@ jobs:
             echo "⚠️ Attempt $i failed with HTTP code: $HTTP_CODE"
             
             if [ $i -lt $MAX_RETRIES ]; then
+              RETRY_DELAY=$((RETRY_DELAY * 2)) # Exponential backoff
               echo "⏳ Waiting ${RETRY_DELAY}s before retry..."
               sleep $RETRY_DELAY
             fi
