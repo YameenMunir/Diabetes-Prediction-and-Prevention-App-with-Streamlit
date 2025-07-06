@@ -1,11 +1,11 @@
 name: Keep Streamlit App Alive
 
 on:
-  # Run every 4 hours to prevent the Streamlit Community Cloud app from hibernating
+  # Run every 1 hour to prevent the Streamlit Community Cloud app from hibernating
   # Cron schedule: minute hour day month day_of_week
-  # "0 */4 * * *" means: at minute 0 of every 4th hour (0:00, 4:00, 8:00, 12:00, 16:00, 20:00)
+  # "0 * * * *" means: at minute 0 of every hour (every hour on the hour)
   schedule:
-    - cron: '0 */4 * * *'
+    - cron: '0 * * * *'
   
   # Allow manual triggering of the workflow
   workflow_dispatch:
@@ -15,20 +15,40 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Ping Streamlit App
+    - name: Ping Streamlit App with Retry Logic
       run: |
-        # Make an HTTP GET request to the Streamlit app URL to keep it alive
-        # Replace YOUR_STREAMLIT_APP_URL with your actual Streamlit Community Cloud app URL
-        # Example: https://your-app-name-yourname.streamlit.app
-        curl -f -s "YOUR_STREAMLIT_APP_URL" > /dev/null
+        APP_URL="https://diabetes-prediction-and-prevention-app.streamlit.app/"
+        MAX_RETRIES=3
+        RETRY_DELAY=10
         
-        # Check if the request was successful
-        if [ $? -eq 0 ]; then
-          echo "✅ Successfully pinged the Streamlit app"
-        else
-          echo "❌ Failed to ping the Streamlit app"
-          exit 1
-        fi
+        echo "🚀 Starting keep-alive ping for: $APP_URL"
+        
+        for i in $(seq 1 $MAX_RETRIES); do
+          echo "📡 Attempt $i of $MAX_RETRIES..."
+          
+          # Make HTTP request with timeout and get response code
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 30 "$APP_URL")
+          
+          if [ "$HTTP_CODE" -eq 200 ]; then
+            echo "✅ Success! App responded with HTTP $HTTP_CODE"
+            echo "🎉 Streamlit app is alive and healthy"
+            exit 0
+          else
+            echo "⚠️ Attempt $i failed with HTTP code: $HTTP_CODE"
+            
+            if [ $i -lt $MAX_RETRIES ]; then
+              echo "⏳ Waiting ${RETRY_DELAY}s before retry..."
+              sleep $RETRY_DELAY
+            fi
+          fi
+        done
+        
+        echo "❌ All $MAX_RETRIES attempts failed"
+        echo "🔍 Final HTTP code: $HTTP_CODE"
+        exit 1
       
-    - name: Log timestamp
-      run: echo "Keep-alive ping completed at $(date)"
+    - name: Log Completion
+      run: |
+        echo "📊 Keep-alive ping completed at $(date)"
+        echo "🌍 Timezone: $(date +%Z)"
+        echo "🕐 UTC Time: $(date -u)"
